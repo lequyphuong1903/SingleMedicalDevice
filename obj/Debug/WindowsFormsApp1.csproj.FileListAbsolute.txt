@@ -26,3 +26,7 @@ C:\Users\Admin\Desktop\medical app\SingleDeviceApp\obj\Debug\WindowsFormsApp1.ex
 C:\Users\Admin\Desktop\medical app\SingleDeviceApp\obj\Debug\WindowsFormsApp1.pdb
 C:\Users\Admin\Desktop\medical app\SingleDeviceApp\obj\Debug\WindowsFormsApp1.SignalChart.resources
 C:\Users\Admin\Desktop\medical app\SingleDeviceApp\obj\Debug\WindowsFormsApp1.WaitForm.resources
+C:\Users\Admin\Desktop\medical app\SingleDeviceApp\bin\Debug\WindowsFormsApp1.exe.manifest
+C:\Users\Admin\Desktop\medical app\SingleDeviceApp\bin\Debug\WindowsFormsApp1.application
+C:\Users\Admin\Desktop\medical app\SingleDeviceApp\obj\Debug\WindowsFormsApp1.exe.manifest
+C:\Users\Admin\Desktop\medical app\SingleDeviceApp\obj\Debug\WindowsFormsApp1.application

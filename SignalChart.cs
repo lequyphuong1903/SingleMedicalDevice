@@ -3,7 +3,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using System;
 using System.IO;
 
-namespace WindowsFormsApp1
+namespace SingleDeviceApp
 {
     public partial class SignalChart : UserControl
     {
@@ -38,7 +38,7 @@ namespace WindowsFormsApp1
             {
                 if (chart.Series[0].Points.Count >= 500)
                 {
-                    chart.Series[0].Points[index].YValues[0] = (-1) * value + 30000;
+                    chart.Series[0].Points[index].YValues[0] = (-1) * value;
                     chart.Series[1].Points[0].XValue = index;
                     chart.Series[1].Points[0].YValues[0] = 100000;
                     chart.Refresh();
@@ -51,10 +51,16 @@ namespace WindowsFormsApp1
                 }
                 else
                 {
-                    chart.Series[0].Points.AddY((-1) * value + 30000);
+                    chart.Series[0].Points.AddY((-1) * value);
+                    index++;
+                    if (index >= 500)
+                    {
+                        index = 0;
+                        ChartYAxisLimit(ChartUpdate() - 300, ChartUpdate() + 300);
+                    }
                 }
                 return value;
-            }
+            } 
         }
 
         public void ChartXAxisLimit(double min, double max)
@@ -85,27 +91,37 @@ namespace WindowsFormsApp1
             chart.Series[0].Points.Clear();
             index = 0;
         }    
-        public void SavingCSV(UInt16[] redvalue, UInt16[] irvalue)
+        public void SavingRecord(UInt16[] redvalue, UInt16[] irvalue)
         {
-            string filePath = "temp.csv";
-            SaveDataToCSV(filePath, redvalue, irvalue);
+            string filePath = "temp.txt";
+            SaveDataToTXT(filePath, redvalue, irvalue);
         }
-        public void ChooseFolderSaveCSV(string dummyFileName)
+        public void ResetRecord()
         {
-            string originalFilename = "temp.csv";
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "CSV Files (*.csv)|*.csv";
-            saveFileDialog.Title = "Save As";
-            saveFileDialog.FileName = dummyFileName;
-            DialogResult result = saveFileDialog.ShowDialog();
-            if (result == DialogResult.OK)
+            using (FileStream fs = File.Open("temp.txt", FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
-                string newFilename = saveFileDialog.FileName;
-                File.Copy(originalFilename, newFilename);
+                lock (fs)
+                {
+                    fs.SetLength(0);
+                }
             }
-            File.Create(originalFilename).Close();
+        }
+        public void ChooseFolderSaveRecord(string dummyFileName)
+        {
+            string originalFilename = "temp.txt";
+            string newFileName = "Record/" + dummyFileName;
+            if (!Directory.Exists("Record"))
+            {
+                Directory.CreateDirectory("Record");
+                File.Copy(originalFilename, newFileName);
+            }
+            else
+            {
+                File.Copy(originalFilename, newFileName);
+            }
+            MessageBox.Show("Save successfully", "Arduino Connection", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }    
-        private void SaveDataToCSV(string filePath, UInt16[] redvalue, UInt16[] irvalue)
+        private void SaveDataToTXT(string filePath, UInt16[] redvalue, UInt16[] irvalue)
         {
             using (StreamWriter writer = new StreamWriter(filePath, true))
             {
@@ -115,7 +131,10 @@ namespace WindowsFormsApp1
                 }
                 for (int i = 0; i < irvalue.Length; i++)
                 {
-                    writer.WriteLine($"{irvalue[i]},{redvalue[i]}");
+                    int ir = (-1) * irvalue[i];
+                    int red = (-1) * redvalue[i];
+                    var line = string.Format("{0},{1}", red, ir);
+                    writer.WriteLine(line);
                 }
             }
         }
@@ -126,6 +145,5 @@ namespace WindowsFormsApp1
                 GetData(value[i]);
         }
         #endregion
-        
     }
 }

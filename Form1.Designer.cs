@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApp1
+﻿namespace SingleDeviceApp
 {
     partial class Form1
     {
@@ -28,9 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.panel7 = new System.Windows.Forms.Panel();
+            this.countDownClock1 = new SingleDeviceApp.CountDownClock();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.pulseBar = new System.Windows.Forms.ProgressBar();
+            this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.IDValue = new System.Windows.Forms.Label();
             this.HRValue = new System.Windows.Forms.Label();
@@ -39,6 +43,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.chart = new SingleDeviceApp.SignalChart();
             this.PauseBtn = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.RFPortBtn = new System.Windows.Forms.Button();
@@ -54,11 +59,9 @@
             this.label6 = new System.Windows.Forms.Label();
             this.idTxt = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.countDownClock = new WindowsFormsApp1.CountDownClock();
-            this.chart = new WindowsFormsApp1.SignalChart();
-            this.countDownClock1 = new WindowsFormsApp1.CountDownClock();
-            this.pulseBar = new System.Windows.Forms.ProgressBar();
+            this.countDownClock = new SingleDeviceApp.CountDownClock();
+            this.label9 = new System.Windows.Forms.Label();
+            this.pulseHeart = new System.Windows.Forms.Timer(this.components);
             this.panel7.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -73,6 +76,15 @@
             this.panel7.Name = "panel7";
             this.panel7.Size = new System.Drawing.Size(357, 158);
             this.panel7.TabIndex = 27;
+            // 
+            // countDownClock1
+            // 
+            this.countDownClock1.Dock = System.Windows.Forms.DockStyle.Left;
+            this.countDownClock1.Location = new System.Drawing.Point(0, 0);
+            this.countDownClock1.Margin = new System.Windows.Forms.Padding(0);
+            this.countDownClock1.Name = "countDownClock1";
+            this.countDownClock1.Size = new System.Drawing.Size(369, 158);
+            this.countDownClock1.TabIndex = 0;
             // 
             // groupBox2
             // 
@@ -94,6 +106,27 @@
             this.groupBox2.Size = new System.Drawing.Size(283, 238);
             this.groupBox2.TabIndex = 48;
             this.groupBox2.TabStop = false;
+            // 
+            // pulseBar
+            // 
+            this.pulseBar.Location = new System.Drawing.Point(139, 192);
+            this.pulseBar.Name = "pulseBar";
+            this.pulseBar.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.pulseBar.Size = new System.Drawing.Size(100, 23);
+            this.pulseBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.pulseBar.TabIndex = 57;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("Arial", 15F);
+            this.label8.ForeColor = System.Drawing.SystemColors.Highlight;
+            this.label8.Location = new System.Drawing.Point(9, 192);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(64, 23);
+            this.label8.TabIndex = 58;
+            this.label8.Text = "Pulse:";
             // 
             // label7
             // 
@@ -182,11 +215,21 @@
             // panel1
             // 
             this.panel1.Controls.Add(this.chart);
-            this.panel1.Location = new System.Drawing.Point(-11, 419);
+            this.panel1.Location = new System.Drawing.Point(-10, 453);
             this.panel1.Margin = new System.Windows.Forms.Padding(7);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(996, 302);
             this.panel1.TabIndex = 47;
+            // 
+            // chart
+            // 
+            this.chart.AutoSize = true;
+            this.chart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.chart.Location = new System.Drawing.Point(0, 0);
+            this.chart.Margin = new System.Windows.Forms.Padding(19, 16, 19, 16);
+            this.chart.Name = "chart";
+            this.chart.Size = new System.Drawing.Size(996, 302);
+            this.chart.TabIndex = 0;
             // 
             // PauseBtn
             // 
@@ -216,7 +259,7 @@
             // RFPortBtn
             // 
             this.RFPortBtn.Font = new System.Drawing.Font("Arial", 13F);
-            this.RFPortBtn.Location = new System.Drawing.Point(501, 46);
+            this.RFPortBtn.Location = new System.Drawing.Point(501, 42);
             this.RFPortBtn.Margin = new System.Windows.Forms.Padding(7);
             this.RFPortBtn.Name = "RFPortBtn";
             this.RFPortBtn.Size = new System.Drawing.Size(140, 40);
@@ -350,25 +393,13 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::WindowsFormsApp1.Properties.Resources.logo1;
+            this.pictureBox1.Image = global::SingleMedicalDevice.Properties.Resources.logo1;
             this.pictureBox1.Location = new System.Drawing.Point(760, 20);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(100, 100);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 56;
             this.pictureBox1.TabStop = false;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Font = new System.Drawing.Font("Arial", 15F);
-            this.label8.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.label8.Location = new System.Drawing.Point(9, 192);
-            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(64, 23);
-            this.label8.TabIndex = 58;
-            this.label8.Text = "Pulse:";
             // 
             // countDownClock
             // 
@@ -378,34 +409,17 @@
             this.countDownClock.Size = new System.Drawing.Size(286, 70);
             this.countDownClock.TabIndex = 49;
             // 
-            // chart
+            // label9
             // 
-            this.chart.AutoSize = true;
-            this.chart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.chart.Location = new System.Drawing.Point(0, 0);
-            this.chart.Margin = new System.Windows.Forms.Padding(19, 16, 19, 16);
-            this.chart.Name = "chart";
-            this.chart.Size = new System.Drawing.Size(996, 302);
-            this.chart.TabIndex = 0;
-            // 
-            // countDownClock1
-            // 
-            this.countDownClock1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.countDownClock1.Location = new System.Drawing.Point(0, 0);
-            this.countDownClock1.Margin = new System.Windows.Forms.Padding(0);
-            this.countDownClock1.Name = "countDownClock1";
-            this.countDownClock1.Size = new System.Drawing.Size(369, 158);
-            this.countDownClock1.TabIndex = 0;
-            // 
-            // pulseBar
-            // 
-            this.pulseBar.Location = new System.Drawing.Point(139, 192);
-            this.pulseBar.Maximum = 300;
-            this.pulseBar.Name = "pulseBar";
-            this.pulseBar.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.pulseBar.Size = new System.Drawing.Size(100, 23);
-            this.pulseBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.pulseBar.TabIndex = 57;
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Arial", 25F);
+            this.label9.ForeColor = System.Drawing.Color.Blue;
+            this.label9.Location = new System.Drawing.Point(409, 407);
+            this.label9.Margin = new System.Windows.Forms.Padding(7, 0, 7, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(187, 39);
+            this.label9.TabIndex = 57;
+            this.label9.Text = "PPG PLOT";
             // 
             // Form1
             // 
@@ -413,6 +427,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(984, 761);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.idTxt);
@@ -481,6 +496,8 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ProgressBar pulseBar;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Timer pulseHeart;
     }
 }
 

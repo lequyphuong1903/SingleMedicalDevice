@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace WindowsFormsApp1
+namespace SingleDeviceApp
 {
     public partial class CountDownClock : UserControl
     {
@@ -35,12 +35,12 @@ namespace WindowsFormsApp1
             Invoke(new Action(() =>
                 {
                 s += 1;
-                if (s==60)
+                if (s == 60)
                 {
                     s = 0;
                     m += 1;
                 }
-                if (m==60)
+                if (m == 60)
                 {
                     m = 0;
                     h += 1;
@@ -60,7 +60,6 @@ namespace WindowsFormsApp1
         }
         public void ResetCount()
         {
-            StopCount();
             ClockTxt.BackColor = Color.White;
             ClockTxt.Text = "00:00:00";
             s = 0;

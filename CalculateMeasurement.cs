@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace WindowsFormsApp1
+namespace SingleDeviceApp
 {
     internal class CalculateMeasurement
     {
@@ -118,7 +118,6 @@ namespace WindowsFormsApp1
                 if (pn_heart_rate_previous < 50)
                     pn_heart_rate_previous = 50;
                 hrList.Add(pn_heart_rate_previous);
-                //pn_heart_rate = n_npks;
                 pn_heart_rate = (int)hrList.Average();
             }
             else

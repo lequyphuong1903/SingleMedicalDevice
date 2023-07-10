@@ -3,14 +3,17 @@ using System.Windows.Forms;
 using System.IO.Ports;
 using System.Drawing;
 using System.Threading;
+using System.Threading.Tasks;
 
-namespace WindowsFormsApp1
+namespace SingleDeviceApp
 {
     public partial class Form1 : Form
     {
         private SerialPort serialPort = new SerialPort();
         private int BUFFER_SIZE = 2;
         private bool NewFlag = false;
+        private bool FlagPort = false;
+        private object serialPortLock = new object();
         CalculateMeasurement Measurement = new CalculateMeasurement();
         WaitFormFunc WaitForm = new WaitFormFunc();
         #region init
@@ -25,7 +28,13 @@ namespace WindowsFormsApp1
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             chart.ChartXAxisLimit(0, 500);
             chart.ChartYAxisLimit(-50000, 50000);
+            pulseHeart.Start();
         }
+        private void CheckAddress(object sender, EventArgs e)
+        {
+            byte value = 5;
+            serialPort.Write(new byte[] { value }, 0, 1);
+        }    
         private void Form1_Load(object sender, EventArgs e)
         {
             string[] ports = SerialPort.GetPortNames();
@@ -51,15 +60,13 @@ namespace WindowsFormsApp1
             
             try
             {
-                //serialPort.Open();
-                //WaitForm.Show(this);
-                //serialPort.DataReceived += SerialPort_DataReceived;
-                Thread.Sleep(1000);
-                //serialPort.DataReceived -= SerialPort_DataReceived;
-                //serialPort.Close();
-                //Thread.Sleep(1000);
-                //WaitForm.Close();
                 serialPort.Open();
+                WaitForm.Show(this);
+                serialPort.Close();
+                Thread.Sleep(1000);
+                WaitForm.Close();
+                serialPort.Open();
+                FlagPort = true;
                 MessageBox.Show("Connect successfully", "Arduino Connection", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch
@@ -72,32 +79,42 @@ namespace WindowsFormsApp1
             RecordBtn.Enabled = false;
             PauseBtn.Enabled = true;
             StopBtn.Enabled = true;
+            if (FlagPort == false)
+            {
+                FlagPort = true;
+            }
             serialPort.DataReceived += SerialPort_DataReceived;
+            pulseHeart.Tick += BeatPulse;
             if (NewFlag == false)
             {
                 NewFlag = true;
+                countDownClock.ResetCount();
                 chart.ChartReset();
-                nameTxt.Text = "";
-                idTxt.Text= "";
                 Measurement.hrList.Clear();
                 Measurement.spo2List.Clear();
                 Measurement.pn_spo2 = 0;
                 Measurement.pn_heart_rate = 0;
+                chart.ChartXAxisLimit(0, 500);
+                chart.ChartYAxisLimit(-50000, 50000);
             }
             countDownClock.StartCount();
+            
             
         }
         private void StopArduino(object sender, EventArgs e)
         {
             serialPort.DataReceived -= SerialPort_DataReceived;
+            pulseHeart.Tick -= BeatPulse;
+            pulseHeart.Stop();
+            chart.ResetRecord();
+            countDownClock.StopCount();
             StopBtn.Enabled = false;
             PauseBtn.Enabled = false;
             RecordBtn.Enabled = true;
             SaveBtn.Enabled = true;
             RecordBtn.Text = "New Record";
-            countDownClock.ResetCount();
             NewFlag = false;
-            
+            FlagPort = false;
         }
         private void ReloadPort(object sender, EventArgs e)
         {
@@ -108,6 +125,7 @@ namespace WindowsFormsApp1
         private void PauseRecord(object sender, EventArgs e)
         {
             serialPort.DataReceived -= SerialPort_DataReceived;
+            pulseHeart.Tick -= BeatPulse;
             RecordBtn.Text = "Resume";
             RecordBtn.Enabled = true;
             SaveBtn.Enabled = true;
@@ -127,19 +145,20 @@ namespace WindowsFormsApp1
                 PauseBtn.Enabled = false;
                 RecordBtn.Enabled = true;
                 RecordBtn.Text = "New Record";
-                countDownClock.ResetCount();
                 SaveBtn.Enabled = false;
-                chart.ChooseFolderSaveCSV(nameTxt.Text + "_" + idTxt.Text + ".csv");
+                chart.ChooseFolderSaveRecord(nameTxt.Text + "_" + idTxt.Text + ".txt");
+                nameTxt.Text = "";
+                idTxt.Text = "";
             }
             
         }
         #endregion
         #region tranmission
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {    
+        {
+            if (FlagPort == true)
             if (serialPort.BytesToRead >= sizeof(UInt16) * BUFFER_SIZE * 2 + sizeof(byte))
             {
-
                 byte[] data = new byte[sizeof(UInt16) * (BUFFER_SIZE * 2) + sizeof(byte)];
                 serialPort.Read(data, 0, sizeof(UInt16) * (BUFFER_SIZE * 2) + sizeof(byte));
                 byte value1 = data[0];
@@ -148,25 +167,36 @@ namespace WindowsFormsApp1
                 Buffer.BlockCopy(data, sizeof(byte), value2, 0, sizeof(UInt16) * BUFFER_SIZE);
                 Buffer.BlockCopy(data, sizeof(byte) + sizeof(UInt16) * BUFFER_SIZE, value3, 0, sizeof(UInt16) * BUFFER_SIZE);
                 if (value1 > 0 & value1 < 128)
-                {
-                    IDValue.Invoke((MethodInvoker)(() => IDValue.Text = value1.ToString()));
+                {                         
                     chart.DrawIt(value3);
-                    chart.SavingCSV(value2, value3);
+                    chart.SavingRecord(value2, value3);
                     Measurement.LogBuff(value2, value3);
                     int hr = Measurement.pn_heart_rate;
                     int spo2 = Measurement.pn_spo2;
+                    IDValue.Invoke((MethodInvoker)(() => IDValue.Text = value1.ToString()));
                     if (hr != -999)
                     {
                         HRValue.Invoke((MethodInvoker)(() => HRValue.Text = hr.ToString()));
-                        //pulseBar.Invoke((MethodInvoker)(() => pulseBar.Value = hr));
                     }
                     if (spo2 != -999)
                     {
                         SPO2Value.Invoke((MethodInvoker)(() => SPO2Value.Text = spo2.ToString()));
                     }
-                }    
-                
+                }
             }
+        }
+        #endregion
+        #region pulse
+        private void BeatPulse(object sender, EventArgs e)
+        {
+            pulseBar.Invoke((MethodInvoker)(() => pulseBar.Value = 20));
+            int bpm = int.Parse(HRValue.Text);
+            if (bpm > 0)
+            {
+                float pulse = (60 / (float)bpm) * 1000;
+                pulseHeart.Interval = (int)pulse;
+                pulseBar.Invoke((MethodInvoker)(() => pulseBar.Value = 100));
+            }         
         }
         #endregion
     }

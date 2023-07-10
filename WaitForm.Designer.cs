@@ -1,4 +1,4 @@
-﻿namespace WindowsFormsApp1
+﻿namespace SingleDeviceApp
 {
     partial class WaitForm
     {
@@ -51,14 +51,14 @@
             this.label2.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(98, 37);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(112, 19);
+            this.label2.Size = new System.Drawing.Size(116, 19);
             this.label2.TabIndex = 1;
-            this.label2.Text = "Please Wait....";
+            this.label2.Text = "Connecting ...";
             // 
             // label1
             // 
             this.label1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.label1.Image = global::WindowsFormsApp1.Properties.Resources._126;
+            this.label1.Image = global::SingleMedicalDevice.Properties.Resources._126;
             this.label1.Location = new System.Drawing.Point(0, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(91, 98);

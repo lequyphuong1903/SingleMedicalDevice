@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Windows.Forms;
 
-namespace WindowsFormsApp1
+namespace SingleDeviceApp
 {
     public class WaitFormFunc
     {
