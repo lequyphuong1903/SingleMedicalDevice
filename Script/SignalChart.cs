@@ -9,6 +9,7 @@ namespace SingleDeviceApp
     {
         private static SignalChart _instance;
         private int index = 0;
+        private bool isDisposed = false;
 
         #region ok
         public static SignalChart Instance
@@ -29,10 +30,23 @@ namespace SingleDeviceApp
 
         public UInt16 GetData(UInt16 value)
         {
-            if (InvokeRequired)
+            if (InvokeRequired && !isDisposed)
             {
-                Func<UInt16, UInt16> getDataDelegate = new Func<UInt16, UInt16>(GetData);
-                return (UInt16)Invoke(getDataDelegate, value);
+
+                    Func<UInt16, UInt16> getDataDelegate = new Func<UInt16, UInt16>(GetData);
+                    try 
+                    {
+                        return (UInt16)Invoke(getDataDelegate, value);
+                    }
+                    
+                    catch
+                    {
+                        return 0;
+                    }
+            }
+            else if (InvokeRequired && isDisposed)
+            {
+                return 0;
             }
             else
             {
@@ -60,7 +74,7 @@ namespace SingleDeviceApp
                     }
                 }
                 return value;
-            } 
+            }
         }
 
         public void ChartXAxisLimit(double min, double max)
@@ -141,9 +155,23 @@ namespace SingleDeviceApp
         
         public void DrawIt(UInt16[] value)
         {
+            if (isDisposed)
+            {
+                return;
+            }
             for (int i = 0; i < value.Length; i++)
                 GetData(value[i]);
         }
         #endregion
+        public void ChartDispose()
+        {
+            isDisposed = true;
+        }
+        public void ChartUnDispose()
+        {
+            isDisposed = false;
+            
+        }
+
     }
 }
