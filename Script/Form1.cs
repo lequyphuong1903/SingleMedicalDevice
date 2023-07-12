@@ -85,7 +85,7 @@ namespace SingleDeviceApp
             if (FlagPort == false)
             {
                 FlagPort = true;
-                // chart = new SignalChart();
+                chart.ResetRecord();
                 serialPort.Open();
             }
             chart.ChartUnDispose();
@@ -114,7 +114,6 @@ namespace SingleDeviceApp
             CloseDown.Start();
             pulseHeart.Tick -= BeatPulse;
             pulseHeart.Stop();
-            chart.ResetRecord();
             countDownClock.StopCount();
             StopBtn.Enabled = false;
             PauseBtn.Enabled = false;
@@ -123,7 +122,6 @@ namespace SingleDeviceApp
             RecordBtn.Text = "New Record";
             NewFlag = false;
             FlagPort = false;
-            // chart.ChartDispose();
             serialPort.Dispose();
         }
         private void ReloadPort(object sender, EventArgs e)
